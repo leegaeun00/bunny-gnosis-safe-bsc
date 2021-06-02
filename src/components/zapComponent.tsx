@@ -11,15 +11,12 @@ import {BnbAbi} from "../abis/BnbAbi";
 import {WbnbAbi} from "../abis/WbnbAbi";
 import {BunnyAbi as tokenAbi} from "../abis/BunnyAbi";
 import {ZapBscAbi as zapAbi} from "../abis/ZapBscAbi";
-import {GnosisSafeAbi} from "../abis/GnosisSafeAbi";
 import {BottomLargeMargin, ButtonContainer, PoolInfo, SelectContainer} from "./styleComponents";
 
 export const ZapComponent: React.FC = () => {
 
     const [web3, setWeb3] = useState<Web3 | undefined>();
     const {sdk: appsSdk, safe: safeInfo, connected} = useSafeAppsSDK();
-
-    const [bnbBalance, setBnbBalance] = useState('0');
 
     const [tokenList, setTokenList] = useState<Array<TokenItem>>();
     const [selectedFromToken, setSelectedFromToken] = useState<any>();
@@ -29,17 +26,12 @@ export const ZapComponent: React.FC = () => {
     const [toTokenInstance, setToTokenInstance] = useState<any>();
     const [zapInstance, setZapInstance] = useState<any>();
 
+    const [bnbBalance, setBnbBalance] = useState('0');
     const [fromTokenBalance, setFromTokenBalance] = useState<string>('0');
     const [isTokenApproved, setIsTokenApproved] = useState<boolean>();
 
     const [tokenInputValue, setTokenInputValue] = useState<string>('');
     const [tokenInputError, setTokenInputError] = useState<string | undefined>();
-
-    //added for gasEstimate but failed to use
-    const [safeInstance, setSafeInstance] = useState<any>();
-    const [threshold, setThreshold] = useState(0);
-    const [owners, setOwners] = useState<any>();
-    const [gasEstimate, setGasEstimate] = useState(0);
 
     // set web3 instance
     useEffect(() => {
@@ -48,49 +40,25 @@ export const ZapComponent: React.FC = () => {
         }
         const web3Instance = new Web3(`https://bsc-dataseed.binance.org/`);
         setWeb3(web3Instance);
-        console.log("web3Instance: ", web3Instance);
-        console.log("safeInfo.network: ", safeInfo.network);
-        console.log("connected: ", connected)
-        console.log("safeInfo:",appsSdk.txs.getBySafeTxHash)
     }, [safeInfo]);
 
+    // get Bnb balance
     useEffect(() => {
         if (!safeInfo || !web3){
             return;
         }
-
-        //get bnb balance
         const getBnbBalance = async () => {
             try {
-                console.log("safeInfo.safeAddress: ", safeInfo.safeAddress);
                 if (safeInfo.safeAddress) {
                     const balance = await web3?.eth.getBalance(safeInfo.safeAddress);
-                    console.log("bnbBalance: ", balance)
                     if (balance) {
                         setBnbBalance(balance);
                     }
                 }
             } catch (err) {
-                console.error(err);
             }
         }
         getBnbBalance();
-
-        // set safe instance, get threshold, get owner accounts
-        const getMoreSafeInfo = async() => {
-            const safeInstance = await new web3.eth.Contract(GnosisSafeAbi as AbiItem[], safeInfo.safeAddress);
-            setSafeInstance(safeInstance);
-            const threshold = await safeInstance.methods.getThreshold().call();
-            setThreshold(threshold);
-            const owners = await safeInstance.methods.getOwners().call();
-            setOwners(owners);
-            console.log('safe instance:', safeInstance);
-            console.log('safe instance threshold:', threshold);
-            console.log('safe instance owner: ', owners);
-        }
-
-        getMoreSafeInfo();
-
     }, [web3, safeInfo.safeAddress]);
 
     // load tokens list and initialize with Bnb and Bunny
@@ -100,7 +68,6 @@ export const ZapComponent: React.FC = () => {
         }
 
         const tokenListRes = getTokenList(safeInfo.network);
-        console.log("tokenListRes: ", tokenListRes)
         setTokenList(tokenListRes);
 
         var findSelectedFromToken = tokenListRes.find((t) => t.id === 'Bnb');
@@ -108,26 +75,21 @@ export const ZapComponent: React.FC = () => {
             findSelectedFromToken = tokenListRes.find((t) => t.id === localStorage.getItem('selectedFromToken'));
         }
         setSelectedFromToken(findSelectedFromToken);
-        console.log("selected from token: ", findSelectedFromToken)
 
         var findSelectedToToken = tokenListRes.find((t) => t.id === 'Bunny');
         if (localStorage.getItem('selectedToToken')) {
             findSelectedToToken = tokenListRes.find((t) => t.id === localStorage.getItem('selectedToToken'));
         }
         setSelectedToToken(findSelectedToToken);
-        console.log("selected to token: ", findSelectedToToken)
 
     }, [safeInfo]);
 
-    // on zap to and from tokens
+    // make token and zap instances
     useEffect(() => {
         const setNewZap = async() => {
             if (!selectedFromToken || !selectedToToken || !web3) {
                 return;
             }
-
-            console.log("selectedFromToken.id: ", selectedFromToken.id)
-            console.log("selectedFromToken.tokenAddr: ", selectedFromToken.tokenAddr)
 
             if (selectedFromToken.id === 'Bnb') {
                 await setFromTokenInstance(new web3.eth.Contract(BnbAbi as AbiItem[], selectedFromToken.tokenAddr));
@@ -138,16 +100,14 @@ export const ZapComponent: React.FC = () => {
             else {
                 await setFromTokenInstance(new web3.eth.Contract(tokenAbi as AbiItem[], selectedFromToken.tokenAddr));
             }
-            console.log('fromTokenInstance:', fromTokenInstance)
 
-            //toTokenInstance is unnecessary, unless toToken is Wbnb
+            // toToken instance is unnecessary, unless toToken is Wbnb
             if (selectedToToken.id ==='Wbnb') {
                 await setToTokenInstance(new web3.eth.Contract(WbnbAbi as AbiItem[], selectedToToken.tokenAddr));
             }
 
             let zapAddr = '0xdC2bBB0D33E0e7Dea9F5b98F46EDBaC823586a0C'
             setZapInstance(new web3.eth.Contract(zapAbi as AbiItem[], zapAddr))
-            console.log('zapInstance: ',zapInstance)
         }
         setNewZap();
     }, [selectedFromToken, web3]);
@@ -161,18 +121,15 @@ export const ZapComponent: React.FC = () => {
 
             // wait until fromToken is correctly updated
             if (selectedFromToken.tokenAddr.toLocaleLowerCase() !== fromTokenInstance?._address.toLocaleLowerCase()) {
-                console.log("selectedFromToken.tokenAddr: ", selectedFromToken.tokenAddr)
-                console.log("fromTokenInstance?._address: ", fromTokenInstance?._address)
                 return;
             }
 
-            // get fromToken Balance
+            // get selectedFromToken Balance
             let fromTokenBalance;
             if (selectedFromToken.id === 'Bnb') {
                 fromTokenBalance = bnbBalance;
             } else {
                 fromTokenBalance = await fromTokenInstance.methods.balanceOf(safeInfo.safeAddress).call();
-                console.log(selectedFromToken.label, 'fromTokenBalance: ', fromTokenBalance)
             }
 
             let isTokenApproved;
@@ -197,22 +154,16 @@ export const ZapComponent: React.FC = () => {
         return new Big(value).div(10 ** selectedFromToken.decimals).toFixed(4);
     };
 
+    // approve fromToken
     const tokenApprove = async () => {
         if (!selectedFromToken || !web3) {
             return;
         }
-        //if (!selectedFromToken || !validateInputValue() || !web3) {
-        //  return;
-        //}
 
         //maximum unint256 as allowance
         const allowance = web3.utils.toBN("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-        console.log("allowance: ",allowance)
-        console.log("selectedFromToken.tokenAddr: ", selectedFromToken.tokenAddr)
-        console.log('selectedToToken.tokenAddr: ',selectedToToken.tokenAddr)
 
         let zapAddr = '0xdC2bBB0D33E0e7Dea9F5b98F46EDBaC823586a0C'
-        console.log('encodeAbi: ', await fromTokenInstance.methods.approve(zapAddr, allowance).encodeABI())
 
         const txs = [
             {
@@ -230,22 +181,17 @@ export const ZapComponent: React.FC = () => {
 
         let approvedKey = selectedFromToken.id + "ApprovedBefore";
         localStorage.setItem(approvedKey, 'true');
-        console.log(selectedFromToken.id + "ApprovedBefore",localStorage.getItem(approvedKey))
     }
 
+    //zap
     const zap = () => {
         if (!selectedFromToken || !selectedToToken || !web3) {
             return;
         }
-        //if (!selectedToken || !validateInputValue() || !web3) {
-        //  return;
-        //}
 
         let zapAddr = '0xdC2bBB0D33E0e7Dea9F5b98F46EDBaC823586a0C';
         const zapParameter = web3.utils.toBN(tokenInputValue.toString());
-        console.log(zapParameter.toString());
 
-        console.log("selectedFromToken.tokenAddr,selectedToToken.tokenAddr: ",selectedFromToken.tokenAddr,selectedToToken.tokenAddr)
         let txs;
         if (selectedFromToken.id==='Bnb' && selectedToToken.id==='Wbnb'){
             txs = [
@@ -306,8 +252,6 @@ export const ZapComponent: React.FC = () => {
 
         const bigInput = new Big(tokenInputValue);
 
-        console.log('isZapDisabled: ', (bigInput.eq('0') || bigInput.gt(fromTokenBalance)) || (selectedFromToken.id===selectedToToken.id));
-
         return (bigInput.eq('0') || bigInput.gt(fromTokenBalance)) || (selectedFromToken.id===selectedToToken.id);
 
     };
@@ -321,7 +265,6 @@ export const ZapComponent: React.FC = () => {
             return;
         }
         await setSelectedFromToken(selectedFromToken);
-        console.log('selectedFromToken: ', selectedFromToken);
         await localStorage.setItem('selectedFromToken', selectedFromToken.id);
     };
 
@@ -334,7 +277,6 @@ export const ZapComponent: React.FC = () => {
             return;
         }
         await setSelectedToToken(selectedToToken);
-        console.log('selectedToToken: ', selectedToToken);
         await localStorage.setItem('selectedToToken', selectedToToken.id);
     };
 

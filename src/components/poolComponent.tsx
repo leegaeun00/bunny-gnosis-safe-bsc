@@ -20,24 +20,18 @@ export const PoolComponent: React.FC = () => {
     const [web3, setWeb3] = useState<Web3 | undefined>();
     const {sdk: appsSdk, safe: safeInfo, connected} = useSafeAppsSDK();
 
-    const [bnbBalance, setBnbBalance] = useState('0');
     const [poolList, setPoolList] = useState<Array<PoolItem>>();
-
     const [selectedPool, setSelectedPool] = useState<PoolItem>();
+
     const [tokenInstance, setTokenInstance] = useState<any>();
     const [poolInstance, setPoolInstance] = useState<any>();
     const [dashboardInstance, setDashboardInstance] = useState<any>();
 
-    //added for gasEstimate but failed to use
-    const [safeInstance, setSafeInstance] = useState<any>();
-    const [threshold, setThreshold] = useState(0);
-    const [owners, setOwners] = useState<any>();
-    const [gasEstimate, setGasEstimate] = useState(0);
-
-    const [isPoolApproved, setIsPoolApproved] = useState<boolean>();
+    const [bnbBalance, setBnbBalance] = useState('0');
     const [poolBalance, setPoolBalance] = useState<string>('0');
     const [tokenBalance, setTokenBalance] = useState<string>('0');
     const [interestEarn, setInterestEarn] = useState<Array<string>>(['0', '0']);
+    const [isPoolApproved, setIsPoolApproved] = useState<boolean>();
 
     const [poolInputValue, setPoolInputValue] = useState<string>('');
     const [poolInputError, setPoolInputError] = useState<string | undefined>();
@@ -49,24 +43,17 @@ export const PoolComponent: React.FC = () => {
         }
         const web3Instance = new Web3(`https://bsc-dataseed.binance.org/`);
         setWeb3(web3Instance);
-        console.log("web3Instance: ", web3Instance);
-        console.log("safeInfo.network: ", safeInfo.network);
-        console.log("connected: ", connected)
-        console.log("safeInfo:",appsSdk.txs.getBySafeTxHash)
     }, [safeInfo]);
 
+    // get Bnb balance
     useEffect(() => {
         if (!safeInfo || !web3){
             return;
         }
-
-        //get bnb balance
         const getBnbBalance = async () => {
             try {
-                console.log("safeInfo.safeAddress: ", safeInfo.safeAddress);
                 if (safeInfo.safeAddress) {
                     const balance = await web3?.eth.getBalance(safeInfo.safeAddress);
-                    console.log("bnbBalance: ", balance)
                     if (balance) {
                         setBnbBalance(balance);
                     }
@@ -76,21 +63,6 @@ export const PoolComponent: React.FC = () => {
             }
         }
         getBnbBalance();
-
-        // set safe instance, get threshold, get owner accounts
-        const getMoreSafeInfo = async() => {
-            const safeInstance = await new web3.eth.Contract(GnosisSafeAbi as AbiItem[], safeInfo.safeAddress);
-            setSafeInstance(safeInstance);
-            const threshold = await safeInstance.methods.getThreshold().call();
-            setThreshold(threshold);
-            const owners = await safeInstance.methods.getOwners().call();
-            setOwners(owners);
-            console.log('safe instance:', safeInstance);
-            console.log('safe instance threshold:', threshold);
-            console.log('safe instance owner: ', owners);
-        }
-
-        getMoreSafeInfo();
 
     }, [web3, safeInfo.safeAddress]);
 
@@ -102,7 +74,6 @@ export const PoolComponent: React.FC = () => {
         }
 
         const poolListRes = getPoolList(safeInfo.network);
-        console.log("poolListRes: ", poolListRes)
         setPoolList(poolListRes);
 
         var findSelectedPool = poolListRes.find((t) => t.id === 'BunnyPool');
@@ -110,25 +81,14 @@ export const PoolComponent: React.FC = () => {
             findSelectedPool = poolListRes.find((t) => t.id === localStorage.getItem('selectedPool'));
         }
         setSelectedPool(findSelectedPool);
-        console.log("selected pool: ", findSelectedPool)
     }, [safeInfo]);
 
-    // on selectedPool
+    // make pool, token, and dashboard instances
     useEffect(() => {
         const setNewPool = async() => {
             if (!selectedPool || !web3) {
                 return;
             }
-            setInterestEarn(['0', '0']);
-            setTokenBalance('0');
-            setPoolBalance('0');
-            setPoolInputValue('');
-            setPoolInputError(undefined);
-
-            console.log("selectedPool.id: ", selectedPool.id)
-            console.log("selectedPool.tokenAddr: ", selectedPool.tokenAddr)
-            console.log("selectedPool.poolAddr: ", selectedPool.poolAddr)
-            console.log("selectedPool.dashboardAddr: ", selectedPool.dashboardAddr)
 
             if (selectedPool.id === 'BnbPool') {
                 await setTokenInstance(new web3.eth.Contract(BnbAbi as AbiItem[], selectedPool.tokenAddr));
@@ -142,10 +102,6 @@ export const PoolComponent: React.FC = () => {
             if (selectedPool.twoTokenProfit) {
                 await setDashboardInstance(new web3.eth.Contract(dashboardAbi as AbiItem[], selectedPool.dashboardAddr));
             }
-
-            console.log('tokenInstance:', tokenInstance)
-            console.log('poolInstance:', poolInstance)
-            console.log('dashboardInstance', dashboardInstance)
         }
         setNewPool();
     }, [selectedPool, web3]);
@@ -159,24 +115,16 @@ export const PoolComponent: React.FC = () => {
 
             // wait until pool is correctly updated
             if (selectedPool.poolAddr.toLocaleLowerCase() !== poolInstance?._address.toLocaleLowerCase()) {
-                console.log("selectedPool.poolAddr: ", selectedPool.poolAddr)
-                console.log("poolInstance?._address: ", poolInstance?._address)
                 return;
             }
 
             // wait until token is correctly updated
             if (selectedPool.tokenAddr.toLocaleLowerCase() !== tokenInstance?._address.toLocaleLowerCase()) {
-                console.log("selectedPool.tokenAddr: ", selectedPool.tokenAddr)
-                console.log("tokenInstance?._address: ", tokenInstance?._address)
-                console.log("selectedPool.dashboardAddr: ",selectedPool.dashboardAddr)
-                console.log("dashboardInstance?._address: ",dashboardInstance?._address)
                 return;
             }
 
             // wait until dashboard is correctly updated
             if ((selectedPool.twoTokenProfit) && (selectedPool.dashboardAddr.toLocaleLowerCase() !== dashboardInstance?._address.toLocaleLowerCase())) {
-                console.log("selectedPool.dashboardAddr: ",selectedPool.dashboardAddr)
-                console.log("dashboardInstance?._address: ",dashboardInstance?._address)
                 return;
             }
 
@@ -187,33 +135,25 @@ export const PoolComponent: React.FC = () => {
                 tokenBalance = bnbBalance;
             } else {
                 tokenBalance = await tokenInstance.methods.balanceOf(safeInfo.safeAddress).call();
-                console.log(selectedPool.label, 'tokenBalance: ', tokenBalance)
             }
 
             // get pool balance
             let poolBalance = await poolInstance.methods.balanceOf(safeInfo.safeAddress).call();
-            console.log(selectedPool.label, 'poolBalance: ', poolBalance)
 
-            let interestEarn;
             // get interest
+            let interestEarn;
             if (!selectedPool.twoTokenProfit) {
                 let interest = await poolInstance.methods.earned(safeInfo.safeAddress).call();
                 interestEarn = [interest.toString(), '0'];
-                console.log('interestEarn: ', interestEarn)
-                console.log('bNumberToHumanFormat(interestEarn[0]): ', bNumberToHumanFormat(interestEarn[0]))
             } else if (selectedPool.twoTokenProfit) {
                 let interest = await dashboardInstance.methods.profitOfPool(selectedPool.poolAddr, safeInfo.safeAddress).call();
                 interestEarn = [interest.profit.toString(), interest.bunny.toString()]
-                console.log('interestEarn: ', interestEarn)
-                console.log('bNumberToHumanFormat(interestEarn[0]): ', bNumberToHumanFormat(interestEarn[0]))
-                console.log('bNumberToHumanFormat(interestEarn[1]): ', bNumberToHumanFormat(interestEarn[1]))
             } else {
                 interestEarn = ["0", "0"];
             }
 
             // get allowance (only in console)
             let allowance = await tokenInstance.methods.allowance(safeInfo.safeAddress,selectedPool.poolAddr).call()
-            console.log("allowance: ", allowance)
 
             // get isPoolApproved
             let isPoolApproved;
@@ -242,21 +182,14 @@ export const PoolComponent: React.FC = () => {
         return new Big(value).div(10 ** selectedPool.decimals).toFixed(4);
     };
 
-
+    // approve pool
     const poolApprove = async () => {
         if (!selectedPool || !web3) {
             return;
         }
-        //if (!selectedToken || !validateInputValue() || !web3) {
-        //  return;
-        //}
 
         //maximum unint256 as allowance
         const allowance = web3.utils.toBN("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-        console.log("allowance: ",allowance)
-        console.log("selectedPool.poolAddr: ", selectedPool.poolAddr)
-        console.log('selectedPool.tokenAddr: ',selectedPool.tokenAddr)
-        console.log('encodeAbi: ', await tokenInstance.methods.approve(selectedPool.poolAddr, allowance).encodeABI())
 
         let txs;
         txs = [
@@ -271,24 +204,19 @@ export const PoolComponent: React.FC = () => {
             safeTxGas: 30000,
         };
 
-        //appsSdk.txs.send({txs});
         appsSdk.txs.send({txs, params});
 
         let approvedKey = selectedPool.id + "ApprovedBefore";
         localStorage.setItem(approvedKey, 'true');
-        console.log(selectedPool.id + "ApprovedBefore",localStorage.getItem(approvedKey))
     }
 
+    // deposit in pool
     const deposit = () => {
         if (!selectedPool || !web3) {
             return;
         }
-        //if (!selectedToken || !validateInputValue() || !web3) {
-        //  return;
-        //}
 
         const depositParameter = web3.utils.toBN(poolInputValue.toString());
-        console.log('depositParameter ', depositParameter.toString())
 
         let txs;
         if (selectedPool.id === 'BnbPool') {
@@ -314,22 +242,18 @@ export const PoolComponent: React.FC = () => {
             safeTxGas: 1000000,
         };
 
-        //appsSdk.txs.send({txs})
         appsSdk.txs.send({txs, params});
 
         setPoolInputValue('');
     };
 
+    // withdraw from pool
     const withdraw = () => {
         if (!selectedPool || !web3) {
             return;
         }
-        //if (!selectedToken || !validateInputValue() || !web3) {
-        //  return;
-        //}
 
         const withdrawParameter = web3.utils.toBN(poolInputValue.toString());
-        console.log(withdrawParameter.toString());
 
         let txs;
         if (selectedPool.id === 'BnbPool'){
@@ -362,13 +286,11 @@ export const PoolComponent: React.FC = () => {
         setPoolInputValue('');
     };
 
+    // withdraw all from pool
     const withdrawAll = () => {
         if (!selectedPool || !web3) {
             return;
         }
-        //if (!selectedToken || !validateInputValue() || !web3) {
-        //  return;
-        //}
 
         const txs = [
             {
@@ -384,10 +306,10 @@ export const PoolComponent: React.FC = () => {
 
         //appsSdk.txs.send({txs})
         appsSdk.txs.send({txs, params});
-
         setPoolInputValue('');
     };
 
+    // claim rewards from pool
     const getReward = () => {
         if (!selectedPool || !web3) {
             return;
@@ -409,7 +331,6 @@ export const PoolComponent: React.FC = () => {
         };
 
         appsSdk.txs.send({txs, params});
-
         setPoolInputValue('');
     };
 
@@ -419,9 +340,6 @@ export const PoolComponent: React.FC = () => {
         }
 
         const bigInput = new Big(poolInputValue);
-
-        console.log('isWithdrawDisabled: ', bigInput.eq('0') || bigInput.gt(poolBalance))
-
         return bigInput.eq('0') || bigInput.gt(poolBalance);
 
     };
@@ -432,9 +350,6 @@ export const PoolComponent: React.FC = () => {
         }
 
         const bigInput = new Big(poolInputValue);
-
-        console.log('isSupplyDisabled: ', bigInput.eq('0') || bigInput.gt(tokenBalance))
-
         return bigInput.eq('0') || bigInput.gt(tokenBalance);
     };
 
@@ -466,7 +381,6 @@ export const PoolComponent: React.FC = () => {
             return;
         }
         await setSelectedPool(selectedPool);
-        console.log('selectedPool: ', selectedPool);
         await localStorage.setItem('selectedPool', selectedPool.id);
     };
 

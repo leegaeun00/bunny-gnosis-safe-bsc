@@ -11,7 +11,7 @@ import {BnbAbi} from "../abis/BnbAbi";
 import {WbnbAbi} from "../abis/WbnbAbi";
 import {BunnyAbi as tokenAbi} from "../abis/BunnyAbi";
 import {ZapBscAbi as zapAbi} from "../abis/ZapBscAbi";
-import {BottomLargeMargin, ButtonContainer, PoolInfo, SelectContainer} from "./styleComponents";
+import {BottomSmallMargin, BottomLargeMargin, ButtonContainer, Info, SelectContainer} from "./styleComponents";
 
 export const ZapComponent: React.FC = () => {
 
@@ -293,11 +293,20 @@ export const ZapComponent: React.FC = () => {
         <BottomLargeMargin>
             <Title size={'xs'}>
                 Zap
+                <div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </div>
             </Title>
             <ButtonContainer>
+                {/*<div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </div>*/}
                 <SelectContainer>
                     From: &nbsp;&nbsp; <Select items={tokenList || []} activeItemId={selectedFromToken.id} onItemClick={onSelectFromToken}/>
                 </SelectContainer>
+                {/*<div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </div>*/}
                 {/*//if fromToken is not Pancake Swap LP token*/}
                 {!selectedFromToken.useZapOut ?
                     <SelectContainer>
@@ -308,14 +317,18 @@ export const ZapComponent: React.FC = () => {
                         To: &nbsp;{selectedFromToken.decompositionLabel[0]} and {selectedFromToken.decompositionLabel[1]}
                     </SelectContainer>
                 }
+                {/*<div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </div>*/}
             </ButtonContainer>
 
-            <PoolInfo>
-                <div>
-                    <Text size="lg"> {selectedFromToken.label} available to Zap </Text>
-                    <Text size="lg"> {bNumberToHumanFormat(fromTokenBalance)}</Text>
-                </div>
-            </PoolInfo>
+            <BottomSmallMargin>
+                <Info>
+                    <div>
+                        <Text size="lg"> {selectedFromToken.label} available to Zap </Text>
+                        <Text size="lg"> {bNumberToHumanFormat(fromTokenBalance)}</Text>
+                    </div>
+                </Info>
+            </BottomSmallMargin>
+
 
             {!isTokenApproved ?
                 <ButtonContainer>

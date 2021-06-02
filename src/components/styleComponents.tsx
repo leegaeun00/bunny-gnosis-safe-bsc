@@ -12,7 +12,7 @@ export const SelectContainer = styled.div`
   }
 `;
 
-export const PoolInfo = styled.div`
+export const Info = styled.div`
   display: flex;
   flex-direction: column;
   align-items: left;

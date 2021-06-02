@@ -12,8 +12,7 @@ import {BnbPoolAbi} from "../abis/BnbPoolAbi";
 import {BunnyAbi as tokenAbi} from "../abis/BunnyAbi";
 import {BunnyPoolAbi as poolAbi} from "../abis/BunnyPoolAbi";
 import {DashboardBscAbi as dashboardAbi} from "../abis/DashboardBscAbi";
-import {GnosisSafeAbi} from "../abis/GnosisSafeAbi";
-import {BottomLargeMargin, BottomSmallMargin, ButtonContainer, PoolInfo, SelectContainer} from "./styleComponents";
+import {BottomLargeMargin, BottomSmallMargin, ButtonContainer, Info, SelectContainer} from "./styleComponents";
 
 
 export const PoolComponent: React.FC = () => {
@@ -395,7 +394,14 @@ export const PoolComponent: React.FC = () => {
 
     return (
         <div>
-            <Title size="xs"> Your PancakeBunny Pool Balance </Title>
+            <Title size="xs"> Pool Balance </Title>
+            <div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </div>
             <BottomSmallMargin>
                 <SelectContainer>
                     <Select items={poolList || []} activeItemId={selectedPool.id} onItemClick={onSelectPool}/>
@@ -403,7 +409,7 @@ export const PoolComponent: React.FC = () => {
             </BottomSmallMargin>
 
             <BottomLargeMargin>
-                <PoolInfo>
+                <Info>
                     <div>
                         <Text size="lg"> {selectedPool.tokenLabel} available to deposit </Text>
                         <Text size="lg"> {bNumberToHumanFormat(tokenBalance)}</Text>
@@ -425,10 +431,19 @@ export const PoolComponent: React.FC = () => {
                         }
                     </div>
 
-                </PoolInfo>
+                </Info>
             </BottomLargeMargin>
 
-            <Title size="xs">Withdraw or Deposit</Title>
+            <Title size="xs">
+                Withdraw or Deposit
+                <div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </div>
+            </Title>
 
             <BottomLargeMargin>
                 {!isPoolApproved ?

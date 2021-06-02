@@ -37,14 +37,9 @@ export const contractAddresses = {
 
         //used wrapped bnb contract address
         Bnb: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-        //Bnb: '0x0000000000000000000000000000000000000000',
-        //Bnb: '0x0000000000000000000000000000000000001002',
-        //Bnb: '0x0000000000000000000000000000000000001004',
-        //Bnb: '0xb8c77482e45f1f44de1745f52c74426c631bdd52',
         BnbPool: '0x52cFa188A1468A521A98eaa798E715Fbb9eb38a3',
 
         //used binance-peg ethereum contract address
-        //balance shows up on Safe App Starter but not on Assets
         Eth: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8',
         EthPool: '0x22af73683dee5D266B0c36c37D0Fd62c402Fd250',
 
@@ -60,12 +55,11 @@ export const contractAddresses = {
 
         DashboardBsc: '0xb3C96d3C3d643c2318E4CDD0a9A48aF53131F5f4',
 
-        //added for Zap
-        //zap contract address is used directly inside Apps.tsx
-        ZapBsc: '0xCBEC8e7AB969F6Eb873Df63d04b4eAFC353574b1',
-
+        //added for zap component
         Vai: '0x4BD17003473389A42DAF6a0a729f6Fdb328BbBd7',
 
         BunnyBnbFlip: '0x5aFEf8567414F29f0f927A0F2787b188624c10E2',
+
+        ZapBsc: '0xCBEC8e7AB969F6Eb873Df63d04b4eAFC353574b1',
     },
 };

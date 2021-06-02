@@ -139,7 +139,7 @@ export const PoolComponent: React.FC = () => {
             // get pool balance
             let poolBalance = await poolInstance.methods.balanceOf(safeInfo.safeAddress).call();
 
-            // get interest
+            // get interest earned
             let interestEarn;
             if (!selectedPool.twoTokenProfit) {
                 let interest = await poolInstance.methods.earned(safeInfo.safeAddress).call();
@@ -199,7 +199,6 @@ export const PoolComponent: React.FC = () => {
             },
         ];
         const params = {
-            //bunny,usdt-bnb,busd-bnb 모두 30000 괜찮
             safeTxGas: 30000,
         };
 
@@ -278,8 +277,6 @@ export const PoolComponent: React.FC = () => {
             safeTxGas:
                 1000000
         };
-
-        //appsSdk.txs.send({txs})
         appsSdk.txs.send({txs, params});
 
         setPoolInputValue('');
@@ -303,7 +300,6 @@ export const PoolComponent: React.FC = () => {
             safeTxGas: 1000000,
         };
 
-        //appsSdk.txs.send({txs})
         appsSdk.txs.send({txs, params});
         setPoolInputValue('');
     };
@@ -313,9 +309,6 @@ export const PoolComponent: React.FC = () => {
         if (!selectedPool || !web3) {
             return;
         }
-        //if (!selectedToken || !validateInputValue() || !web3) {
-        //  return;
-        //}
 
         const txs = [
             {
@@ -450,7 +443,6 @@ export const PoolComponent: React.FC = () => {
                     <ButtonContainer>
                         <Button size="lg" color="primary" variant="contained" onClick={poolApprove}> Approve PancakeBunny <br/>
                             to transact your {selectedPool.tokenLabel} </Button>
-                        {/*consider also using 'in {selectedPool.label}'*/}
                     </ButtonContainer>
                     :
                     <div>
@@ -458,7 +450,6 @@ export const PoolComponent: React.FC = () => {
                             decimals={selectedPool.decimals}
                             onChange={onPoolInputChange}
                             value={poolInputValue}
-                            //renderInput={(props: any) => <TextField label="Amount" meta={{ error: inputError }} {...props} />}
                             renderInput={(props: any) => <TextField label="Amount" {...props} />}
                         />
 

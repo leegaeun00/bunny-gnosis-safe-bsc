@@ -225,7 +225,7 @@ export const ZapComponent: React.FC = () => {
                     data: zapInstance.methods.zapOut(selectedFromToken.tokenAddr,zapParameter).encodeABI(),
                 },
             ];
-            // when fromToken uses ZapIn function (such as when fromToken is BNB)
+        // when fromToken uses ZapIn function (when fromToken is Bnb)
         } else {
             txs = [
                 {
@@ -302,11 +302,9 @@ export const ZapComponent: React.FC = () => {
                 </div>
             </Title>
             <ButtonContainer>
-                {/*<div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </div>*/}
                 <SelectContainer>
                     From: &nbsp;&nbsp; <Select items={tokenList || []} activeItemId={selectedFromToken.id} onItemClick={onSelectFromToken}/>
                 </SelectContainer>
-                {/*<div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </div>*/}
                 {/*//if fromToken is not Pancake Swap LP token*/}
                 {!selectedFromToken.useZapOut ?
                     <SelectContainer>
@@ -317,7 +315,6 @@ export const ZapComponent: React.FC = () => {
                         To: &nbsp;{selectedFromToken.decompositionLabel[0]} and {selectedFromToken.decompositionLabel[1]}
                     </SelectContainer>
                 }
-                {/*<div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </div>*/}
             </ButtonContainer>
 
             <BottomSmallMargin>
@@ -340,7 +337,6 @@ export const ZapComponent: React.FC = () => {
                         decimals={selectedFromToken.decimals}
                         onChange={onTokenInputChange}
                         value={tokenInputValue}
-                        //renderInput={(props: any) => <TextField label="Amount" meta={{ error: inputError }} {...props} />}
                         renderInput={(props: any) => <TextField label="Amount" {...props} />}
                     />
 

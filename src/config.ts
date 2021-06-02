@@ -1,24 +1,13 @@
 import { Networks } from '@gnosis.pm/safe-apps-sdk';
 import { contractAddresses } from './contractAddresses';
 
-//need to add images
-//import daiIcon from './images/asset_DAI.svg';
-//import batIcon from './images/asset_BAT.svg';
-//import wbtcIcon from './images/asset_BTC.svg';
-//import ethIcon from './images/asset_ETH.svg';
-//import repIcon from './images/asset_REP.svg';
-//import usdcIcon from './images/asset_USDC.svg';
-//import usdtIcon from './images/asset_USDT.svg';
-//import zrxIcon from './images/asset_ZRX.svg';
-
 export type PoolItem = {
     id: string;
     label: string;
     tokenLabel: string;
+    //when twoTokenProfit is true, BUNNY must go second in profitLabel
     profitLabel: Array<string>;
     twoTokenProfit: boolean;
-    //need to add images
-    //iconUrl: string;
     decimals: number;
     tokenAddr: string;
     poolAddr: string;
@@ -38,14 +27,12 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
     }
 
     return [
-        //for profit label, BUNNY must always go second
         {
             id: 'BunnyPool',
             label: 'BUNNY Pool',
             tokenLabel: 'BUNNY',
             profitLabel: ['WBNB'],
             twoTokenProfit: false,
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.Bunny,
             poolAddr: contractAddressesByNetwork.BunnyPool,
@@ -57,7 +44,6 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
             tokenLabel: 'BUNNY',
             profitLabel: ['BUNNY'],
             twoTokenProfit: false,
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.Bunny,
             poolAddr: contractAddressesByNetwork.BunnyBoostPool,
@@ -69,7 +55,6 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
             tokenLabel: 'CAKE',
             profitLabel: ['CAKE','BUNNY'],
             twoTokenProfit: true,
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.Cake,
             poolAddr: contractAddressesByNetwork.CakePool,
@@ -81,7 +66,6 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
             tokenLabel: 'CAKE-BNB FLIP',
             profitLabel: ['CAKE-BNB FLIP','BUNNY'],
             twoTokenProfit: true,
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.CakeBnbFlip,
             poolAddr: contractAddressesByNetwork.CakeBnbFlipPool,
@@ -93,7 +77,6 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
             tokenLabel: 'CAKE-BNB FLIP',
             profitLabel: ['CAKE','BUNNY'],
             twoTokenProfit: true,
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.CakeBnbFlip,
             poolAddr: contractAddressesByNetwork.CakeBnbFlipCakeMaximizerPool,
@@ -105,7 +88,6 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
             tokenLabel: 'BTCB-BNB FLIP',
             profitLabel: ['BTCB-BNB FLIP','BUNNY'],
             twoTokenProfit: true,
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.BtcbBnbFlip,
             poolAddr: contractAddressesByNetwork.BtcbBnbFlipPool,
@@ -117,7 +99,6 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
             tokenLabel: 'BTCB-BNB FLIP',
             profitLabel: ['CAKE','BUNNY'],
             twoTokenProfit: true,
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.BtcbBnbFlip,
             poolAddr: contractAddressesByNetwork.BtcbBnbFlipCakeMaximizerPool,
@@ -129,7 +110,6 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
             tokenLabel: 'ETH-BNB FLIP',
             profitLabel: ['ETH-BNB FLIP','BUNNY'],
             twoTokenProfit: true,
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.EthBnbFlip,
             poolAddr: contractAddressesByNetwork.EthBnbFlipPool,
@@ -141,7 +121,6 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
             tokenLabel: 'ETH-BNB FLIP',
             profitLabel: ['CAKE','BUNNY'],
             twoTokenProfit: true,
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.EthBnbFlip,
             poolAddr: contractAddressesByNetwork.EthBnbFlipCakeMaximizerPool,
@@ -153,7 +132,6 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
             tokenLabel: 'BUSD-BNB FLIP',
             profitLabel: ['BUSD-BNB FLIP','BUNNY'],
             twoTokenProfit: true,
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.BusdBnbFlip,
             poolAddr: contractAddressesByNetwork.BusdBnbFlipPool,
@@ -165,7 +143,6 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
             tokenLabel: 'BUSD-BNB FLIP',
             profitLabel: ['CAKE','BUNNY'],
             twoTokenProfit: true,
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.BusdBnbFlip,
             poolAddr: contractAddressesByNetwork.BusdBnbFlipCakeMaximizerPool,
@@ -177,7 +154,6 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
             tokenLabel: 'USDT-BNB FLIP',
             profitLabel: ['USDT-BNB FLIP','BUNNY'],
             twoTokenProfit: true,
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.UsdtBnbFlip,
             poolAddr: contractAddressesByNetwork.UsdtBnbFlipPool,
@@ -189,7 +165,6 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
             tokenLabel: 'USDT-BNB FLIP',
             profitLabel: ['CAKE','BUNNY'],
             twoTokenProfit: true,
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.UsdtBnbFlip,
             poolAddr: contractAddressesByNetwork.UsdtBnbFlipCakeMaximizerPool,
@@ -201,7 +176,6 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
             tokenLabel: 'USDT-BUSD FLIP',
             profitLabel: ['USDT-BUSD FLIP','BUNNY'],
             twoTokenProfit: true,
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.UsdtBusdFlip,
             poolAddr: contractAddressesByNetwork.UsdtBusdFlipPool,
@@ -213,7 +187,6 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
             tokenLabel: 'USDT-BUSD FLIP',
             profitLabel: ['CAKE','BUNNY'],
             twoTokenProfit: true,
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.UsdtBusdFlip,
             poolAddr: contractAddressesByNetwork.UsdtBusdFlipCakeMaximizerPool,
@@ -225,7 +198,6 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
             tokenLabel: 'VAI-BUSD FLIP',
             profitLabel: ['VAI-BUSD FLIP','BUNNY'],
             twoTokenProfit: true,
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.VaiBusdFlip,
             poolAddr: contractAddressesByNetwork.VaiBusdFlipPool,
@@ -237,7 +209,6 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
             tokenLabel: 'VAI-BUSD FLIP',
             profitLabel: ['CAKE','BUNNY'],
             twoTokenProfit: true,
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.VaiBusdFlip,
             poolAddr: contractAddressesByNetwork.VaiBusdFlipCakeMaximizerPool,
@@ -249,7 +220,6 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
             tokenLabel: 'BNB',
             profitLabel: ['BNB','BUNNY'],
             twoTokenProfit: true,
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.Bnb,
             poolAddr: contractAddressesByNetwork.BnbPool,
@@ -261,7 +231,6 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
             tokenLabel: 'ETH',
             profitLabel: ['ETH','BUNNY'],
             twoTokenProfit: true,
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.Eth,
             poolAddr: contractAddressesByNetwork.EthPool,
@@ -273,7 +242,6 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
             tokenLabel: 'BTCB',
             profitLabel: ['BTCB','BUNNY'],
             twoTokenProfit: true,
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.Btcb,
             poolAddr: contractAddressesByNetwork.BtcbPool,
@@ -285,7 +253,6 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
             tokenLabel: 'USDT',
             profitLabel: ['USDT','BUNNY'],
             twoTokenProfit: true,
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.Usdt,
             poolAddr: contractAddressesByNetwork.UsdtPool,
@@ -297,7 +264,6 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
             tokenLabel: 'BUSD',
             profitLabel: ['BUSD','BUNNY'],
             twoTokenProfit: true,
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.Busd,
             poolAddr: contractAddressesByNetwork.BusdPool,
@@ -309,8 +275,6 @@ export const getPoolList = (network: Networks): Array<PoolItem> => {
 export type TokenItem = {
     id: string;
     label: string;
-    //need to add images
-    //iconUrl: string;
     decimals: number;
     tokenAddr: string;
     //set which zap function to use
@@ -333,13 +297,10 @@ export const getTokenList = (network: Networks): Array<TokenItem> => {
     }
 
     return [
-        //for profit label, BUNNY must always go second
         {
             id: 'Bnb',
             label: 'BNB',
-            //iconUrl: daiIcon,
             decimals: 18,
-            //used Wbnb address
             tokenAddr: contractAddressesByNetwork.Bnb,
             useZapIn: true,
             useZapInToken: false,
@@ -349,9 +310,7 @@ export const getTokenList = (network: Networks): Array<TokenItem> => {
         {
             id: 'Wbnb',
             label: 'WBNB',
-            //iconUrl: daiIcon,
             decimals: 18,
-            //used Wbnb address of Bnb address
             tokenAddr: contractAddressesByNetwork.Bnb,
             useZapIn: false,
             useZapInToken: true,
@@ -361,7 +320,6 @@ export const getTokenList = (network: Networks): Array<TokenItem> => {
         {
             id: 'Bunny',
             label: 'BUNNY',
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.Bunny,
             useZapIn: false,
@@ -372,7 +330,6 @@ export const getTokenList = (network: Networks): Array<TokenItem> => {
         {
             id: 'Cake',
             label: 'CAKE',
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.Cake,
             useZapIn: false,
@@ -383,7 +340,6 @@ export const getTokenList = (network: Networks): Array<TokenItem> => {
         {
             id: 'Busd',
             label: 'BUSD',
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.Busd,
             useZapIn: false,
@@ -394,7 +350,6 @@ export const getTokenList = (network: Networks): Array<TokenItem> => {
         {
             id: 'Usdt',
             label: 'USDT',
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.Usdt,
             useZapIn: false,
@@ -405,7 +360,6 @@ export const getTokenList = (network: Networks): Array<TokenItem> => {
         {
             id: 'Btcb',
             label: 'BTCB',
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.Btcb,
             useZapIn: false,
@@ -416,7 +370,6 @@ export const getTokenList = (network: Networks): Array<TokenItem> => {
         {
             id: 'Eth',
             label: 'ETH',
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.Eth,
             useZapIn: false,
@@ -427,7 +380,6 @@ export const getTokenList = (network: Networks): Array<TokenItem> => {
         {
             id: 'Vai',
             label: 'VAI',
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.Vai,
             useZapIn: false,
@@ -438,7 +390,6 @@ export const getTokenList = (network: Networks): Array<TokenItem> => {
         {
             id: 'BunnyBnbFlip',
             label: 'BUNNY-BNB FLIP',
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.BunnyBnbFlip,
             useZapIn: false,
@@ -449,7 +400,6 @@ export const getTokenList = (network: Networks): Array<TokenItem> => {
         {
             id: 'CakeBnbFlip',
             label: 'CAKE-BNB FLIP',
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.CakeBnbFlip,
             useZapIn: false,
@@ -460,7 +410,6 @@ export const getTokenList = (network: Networks): Array<TokenItem> => {
         {
             id: 'BusdBnbFlip',
             label: 'BUSD-BNB FLIP',
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.BusdBnbFlip,
             useZapIn: false,
@@ -471,7 +420,6 @@ export const getTokenList = (network: Networks): Array<TokenItem> => {
         {
             id: 'UsdtBnbFlip',
             label: 'USDT-BNB FLIP',
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.UsdtBnbFlip,
             useZapIn: false,
@@ -482,7 +430,6 @@ export const getTokenList = (network: Networks): Array<TokenItem> => {
         {
             id: 'BtcbBnbFlip',
             label: 'BTCB-BNB FLIP',
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.BtcbBnbFlip,
             useZapIn: false,
@@ -493,7 +440,6 @@ export const getTokenList = (network: Networks): Array<TokenItem> => {
         {
             id: 'EthBnbFlip',
             label: 'ETH-BNB FLIP',
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.EthBnbFlip,
             useZapIn: false,
@@ -504,7 +450,6 @@ export const getTokenList = (network: Networks): Array<TokenItem> => {
         {
             id: 'UsdtBusdFlip',
             label: 'USDT-BUSD FLIP',
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.UsdtBusdFlip,
             useZapIn: false,
@@ -515,7 +460,6 @@ export const getTokenList = (network: Networks): Array<TokenItem> => {
         {
             id: 'VaiBusdFlip',
             label: 'VAI-BUSD FLIP',
-            //iconUrl: daiIcon,
             decimals: 18,
             tokenAddr: contractAddressesByNetwork.VaiBusdFlip,
             useZapIn: false,

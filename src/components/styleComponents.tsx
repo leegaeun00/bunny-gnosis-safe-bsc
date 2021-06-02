@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 export const SelectContainer = styled.div`
   display: flex;
@@ -11,7 +12,7 @@ export const SelectContainer = styled.div`
   }
 `;
 
-export const DaiInfo = styled.div`
+export const PoolInfo = styled.div`
   display: flex;
   flex-direction: column;
   align-items: left;
@@ -43,6 +44,14 @@ const Card = styled.div`
   display: flex;
   justify-content: left;
   padding: 24px;
+`;
+
+export const StyledLink = styled(Link)`
+    text-decoration: none;
+
+    &:focus, &:hover, &:visited, &:link, &:active {
+        text-decoration: none;
+    }
 `;
 
 export const WidgetWrapper: React.FC = ({ children }) => (

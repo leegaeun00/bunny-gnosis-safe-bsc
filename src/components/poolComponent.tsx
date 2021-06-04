@@ -6,7 +6,7 @@ import {BigNumberInput} from "big-number-input";
 import {Button, Divider, Loader, Select, Text, TextField, Title} from "@gnosis.pm/safe-react-components";
 import {useSafeAppsSDK} from "@gnosis.pm/safe-apps-react-sdk";
 
-import {getPoolList, PoolItem} from "../config";
+import {getPoolList, PoolItem} from "../poolConfig";
 import {BnbAbi} from "../abis/BnbAbi";
 import {BnbPoolAbi} from "../abis/BnbPoolAbi";
 import {BunnyAbi as tokenAbi} from "../abis/BunnyAbi";
@@ -304,6 +304,40 @@ export const PoolComponent: React.FC = () => {
         setPoolInputValue('');
     };
 
+    // deposit all from pool
+    const depositAll = () => {
+        if (!selectedPool || !web3) {
+            return;
+        }
+
+        let txs;
+        if (selectedPool.id === 'BnbPool') {
+            txs = [
+                {
+                    to: selectedPool.poolAddr,
+                    value: bnbBalance.toString(),
+                    data: poolInstance.methods.depositBNB().encodeABI(),
+                },
+            ];
+        }
+        else {
+            txs = [
+                {
+                    to: selectedPool.poolAddr,
+                    value: '0',
+                    data: poolInstance.methods.depositAll().encodeABI(),
+                },
+            ];
+        }
+
+        const params = {
+            safeTxGas: 1000000,
+        };
+
+        appsSdk.txs.send({txs, params});
+        setPoolInputValue('');
+    };
+
     // claim rewards from pool
     const getReward = () => {
         if (!selectedPool || !web3) {
@@ -350,6 +384,13 @@ export const PoolComponent: React.FC = () => {
             return true;
         }
         return poolBalance==='0';
+    }
+
+    const isDepositAllDisabled = () => {
+        if (!!poolInputError || !isPoolApproved || !selectedPool) {
+            return true;
+        }
+        return tokenBalance==='0';
     }
 
     const isGetRewardDisabled = () => {
@@ -468,6 +509,12 @@ export const PoolComponent: React.FC = () => {
                                 Withdraw All
                             </Button>
                             <div>&nbsp;&nbsp;&nbsp;</div>
+                            <Button size="lg" color="primary" variant="contained" onClick={depositAll} disabled={isDepositAllDisabled()}>
+                                Deposit All
+                            </Button>
+                        </ButtonContainer>
+
+                        <ButtonContainer>
                             <Button size="lg" color="primary" variant="contained" onClick={getReward} disabled={isGetRewardDisabled()}>
                                 Claim All Profit
                             </Button>

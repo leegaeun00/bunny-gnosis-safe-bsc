@@ -6,7 +6,7 @@ import {BigNumberInput} from "big-number-input";
 import {Button, Loader, Select, Text, TextField, Title} from "@gnosis.pm/safe-react-components";
 import {useSafeAppsSDK} from "@gnosis.pm/safe-apps-react-sdk";
 
-import {getTokenList, TokenItem} from "../config";
+import {getTokenList, TokenItem} from "../zapConfig";
 import {BnbAbi} from "../abis/BnbAbi";
 import {WbnbAbi} from "../abis/WbnbAbi";
 import {BunnyAbi as tokenAbi} from "../abis/BunnyAbi";
@@ -101,9 +101,17 @@ export const ZapComponent: React.FC = () => {
                 await setFromTokenInstance(new web3.eth.Contract(tokenAbi as AbiItem[], selectedFromToken.tokenAddr));
             }
 
-            // toToken instance is unnecessary, unless toToken is Wbnb
-            if (selectedToToken.id ==='Wbnb') {
+            // toToken instance is actually unnecessary, unless toToken is Wbnb
+            if (selectedToToken.id === 'Bnb') {
+                await setToTokenInstance(new web3.eth.Contract(BnbAbi as AbiItem[], selectedToToken.tokenAddr));
+            }
+            else if (selectedToToken.id ==='Wbnb') {
+                console.log('selectedToToken.id ===Wbnb',selectedToToken.id ==='Wbnb')
+                console.log(new web3.eth.Contract(WbnbAbi as AbiItem[], selectedToToken.tokenAddr))
                 await setToTokenInstance(new web3.eth.Contract(WbnbAbi as AbiItem[], selectedToToken.tokenAddr));
+            }
+            else {
+                await setToTokenInstance(new web3.eth.Contract(tokenAbi as AbiItem[], selectedToToken.tokenAddr));
             }
 
             let zapAddr = '0xdC2bBB0D33E0e7Dea9F5b98F46EDBaC823586a0C'
@@ -115,7 +123,7 @@ export const ZapComponent: React.FC = () => {
     // get selectedFromToken balance
     useEffect(() => {
         const getData = async () => {
-            if (!safeInfo.safeAddress || !selectedFromToken || !fromTokenInstance) {
+            if (!safeInfo.safeAddress || !selectedFromToken || !fromTokenInstance || !selectedToToken || !toTokenInstance) {
                 return;
             }
 
@@ -191,6 +199,10 @@ export const ZapComponent: React.FC = () => {
 
         let zapAddr = '0xdC2bBB0D33E0e7Dea9F5b98F46EDBaC823586a0C';
         const zapParameter = web3.utils.toBN(tokenInputValue.toString());
+        console.log('tokenInputValue: ', tokenInputValue)
+        console.log('zapParameter: ',zapParameter)
+        console.log('bnbBalance: ',bnbBalance)
+        console.log('fromTokenBalance: ',fromTokenBalance)
 
         let txs;
         if (selectedFromToken.id==='Bnb' && selectedToToken.id==='Wbnb'){
@@ -245,6 +257,73 @@ export const ZapComponent: React.FC = () => {
         setTokenInputValue('');
     };
 
+    //zap all
+    const zapAll = () => {
+        if (!selectedFromToken || !selectedToToken || !web3) {
+            return;
+        }
+
+        let zapAddr = '0xdC2bBB0D33E0e7Dea9F5b98F46EDBaC823586a0C';
+        const zapParameter = web3.utils.toBN(fromTokenBalance.toString());
+
+        console.log('fromTokenBalance: ',fromTokenBalance)
+        console.log('zapParameter: ',zapParameter)
+        console.log('bnbBalance: ',bnbBalance)
+
+        let txs;
+        if (selectedFromToken.id==='Bnb' && selectedToToken.id==='Wbnb'){
+            txs = [
+                {
+                    to: selectedToToken.tokenAddr,
+                    value: bnbBalance.toString(),
+                    data: toTokenInstance.methods.deposit().encodeABI(),
+                },
+            ];
+        } else if (selectedFromToken.id==='Wbnb' && selectedToToken.id==='Bnb'){
+            txs = [
+                {
+                    to: selectedFromToken.tokenAddr,
+                    value: '0',
+                    data: fromTokenInstance.methods.withdraw(zapParameter).encodeABI(),
+                },
+            ];
+        } else if (selectedFromToken.useZapInToken) {
+            txs = [
+                {
+                    to: zapAddr,
+                    value: '0',
+                    data: zapInstance.methods.zapInToken(selectedFromToken.tokenAddr,zapParameter,selectedToToken.tokenAddr).encodeABI(),
+                },
+            ];
+        } else if (selectedFromToken.useZapOut) {
+            txs = [
+                {
+                    to: zapAddr,
+                    value: '0',
+                    data: zapInstance.methods.zapOut(selectedFromToken.tokenAddr,zapParameter).encodeABI(),
+                },
+            ];
+        // when fromToken uses ZapIn function (when fromToken is Bnb)
+        } else {
+            txs = [
+                {
+                    to: zapAddr,
+                    value: bnbBalance.toString(),
+                    data: zapInstance.methods.zapIn(selectedToToken.tokenAddr).encodeABI(),
+                },
+            ];
+        }
+
+        const params = {
+            safeTxGas: 1000000,
+        };
+
+        appsSdk.txs.send({txs, params});
+
+        setTokenInputValue('');
+    };
+
+
     const isZapDisabled = () => {
         if (!!tokenInputError || !tokenInputValue || !isTokenApproved || !selectedFromToken || !selectedToToken) {
             return true;
@@ -252,7 +331,26 @@ export const ZapComponent: React.FC = () => {
 
         const bigInput = new Big(tokenInputValue);
 
-        return (bigInput.eq('0') || bigInput.gt(fromTokenBalance)) || (selectedFromToken.id===selectedToToken.id);
+        if (!selectedFromToken.useZapOut) {
+            return (bigInput.eq('0') || bigInput.gt(fromTokenBalance)) || (selectedFromToken.id === selectedToToken.id);
+        // when fromToken uses ZapOut function (when fromToken is Pancakeswap LP)
+        } else {
+            return (bigInput.eq('0') || bigInput.gt(fromTokenBalance))
+        }
+
+    };
+
+    const isZapAllDisabled = () => {
+        if (!!tokenInputError || !isTokenApproved || !selectedFromToken || !selectedToToken) {
+            return true;
+        }
+
+        if (!selectedFromToken.useZapOut) {
+            return fromTokenBalance === '0' || (selectedFromToken.id === selectedToToken.id);
+        // when fromToken uses ZapOut function (when fromToken is Pancakeswap LP)
+        } else {
+            return fromTokenBalance === '0'
+        }
 
     };
 
@@ -343,6 +441,9 @@ export const ZapComponent: React.FC = () => {
                     <ButtonContainer>
                         <Button size="lg" color="primary" variant="contained" onClick={zap} disabled={isZapDisabled()}>
                             Zap
+                        </Button>
+                        <Button size="lg" color="primary" variant="contained" onClick={zapAll} disabled={isZapAllDisabled()}>
+                            Zap All
                         </Button>
                     </ButtonContainer>
                 </div>

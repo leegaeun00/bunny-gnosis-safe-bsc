@@ -12,7 +12,7 @@ import {BnbPoolAbi} from "../abis/BnbPoolAbi";
 import {BunnyAbi as tokenAbi} from "../abis/BunnyAbi";
 import {BunnyPoolAbi as poolAbi} from "../abis/BunnyPoolAbi";
 import {DashboardBscAbi as dashboardAbi} from "../abis/DashboardBscAbi";
-import {BottomLargeMargin, BottomSmallMargin, ButtonContainer, Info, SelectContainer} from "./styleComponents";
+import {BottomLargeMargin, BottomSmallMargin, TopSmallMargin, ButtonContainer, Info, SelectContainer, TransactionTypeContainer, TransactionTypeButton} from "./styleComponents";
 
 
 export const PoolComponent: React.FC = () => {
@@ -34,6 +34,7 @@ export const PoolComponent: React.FC = () => {
 
     const [poolInputValue, setPoolInputValue] = useState<string>('');
     const [poolInputError, setPoolInputError] = useState<string | undefined>();
+    const [transactionType, setTransactionType] = useState<string>('Deposit');
 
     // set web3 instance
     useEffect(() => {
@@ -161,12 +162,6 @@ export const PoolComponent: React.FC = () => {
             } else {
                 isPoolApproved = false
             }
-            // if (localStorage.getItem(selectedPool.id+"ApprovedBefore")===null){
-            //     isPoolApproved=false
-            // }
-            // if (localStorage.getItem(selectedPool.id+"ApprovedBefore")==='true'){
-            //     isPoolApproved=true
-            // }
 
             setTokenBalance(tokenBalance);
             setPoolBalance(poolBalance);
@@ -208,9 +203,6 @@ export const PoolComponent: React.FC = () => {
         };
 
         appsSdk.txs.send({txs, params});
-
-        // let approvedKey = selectedPool.id + "ApprovedBefore";
-        // localStorage.setItem(approvedKey, 'true');
     }
 
     // deposit in pool
@@ -287,62 +279,6 @@ export const PoolComponent: React.FC = () => {
         setPoolInputValue('');
     };
 
-    // withdraw all from pool
-    const withdrawAll = () => {
-        if (!selectedPool || !web3) {
-            return;
-        }
-
-        const txs = [
-            {
-                to: selectedPool.poolAddr,
-                value: '0',
-                data: poolInstance.methods.withdrawAll().encodeABI(),
-            },
-        ];
-
-        const params = {
-            safeTxGas: 1000000,
-        };
-
-        appsSdk.txs.send({txs, params});
-        setPoolInputValue('');
-    };
-
-    // deposit all from pool
-    const depositAll = () => {
-        if (!selectedPool || !web3) {
-            return;
-        }
-
-        let txs;
-        if (selectedPool.id === 'BnbPool') {
-            txs = [
-                {
-                    to: selectedPool.poolAddr,
-                    value: bnbBalance.toString(),
-                    data: poolInstance.methods.depositBNB().encodeABI(),
-                },
-            ];
-        }
-        else {
-            txs = [
-                {
-                    to: selectedPool.poolAddr,
-                    value: '0',
-                    data: poolInstance.methods.depositAll().encodeABI(),
-                },
-            ];
-        }
-
-        const params = {
-            safeTxGas: 1000000,
-        };
-
-        appsSdk.txs.send({txs, params});
-        setPoolInputValue('');
-    };
-
     // claim rewards from pool
     const getReward = () => {
         if (!selectedPool || !web3) {
@@ -384,14 +320,14 @@ export const PoolComponent: React.FC = () => {
         return bigInput.eq('0') || bigInput.gt(tokenBalance);
     };
 
-    const isWithdrawAllDisabled = () => {
+    const isWithdrawMaxDisabled = () => {
         if (!!poolInputError || !isPoolApproved || !selectedPool) {
             return true;
         }
         return poolBalance==='0';
     }
 
-    const isDepositAllDisabled = () => {
+    const isDepositMaxDisabled = () => {
         if (!!poolInputError || !isPoolApproved || !selectedPool) {
             return true;
         }
@@ -427,6 +363,95 @@ export const PoolComponent: React.FC = () => {
         setPoolInputValue(value);
     };
 
+    // Deposit component
+    function Deposit() {
+        if (!selectedPool || !connected) {
+            return <Loader size="md"/>;
+        }
+        return (
+            <div>
+                <ButtonContainer>
+                    <BigNumberInput
+                        decimals={selectedPool.decimals}
+                        onChange={onPoolInputChange}
+                        value={poolInputValue}
+                        renderInput={(props: any) => <TextField label="Amount" {...props} />}
+                    />
+                    <div>&nbsp;&nbsp;&nbsp;</div>
+                    <Button size='md' style = {{height:'55px'}} color="primary" variant="contained"
+                            onClick={()=> {setPoolInputValue(tokenBalance)}} disabled={isDepositMaxDisabled()}>
+                        Max
+                    </Button>
+                </ButtonContainer>
+                <ButtonContainer>
+                    <Button size="lg" color="primary" variant="contained" onClick={deposit} disabled={isDepositDisabled()}>
+                        Deposit
+                    </Button>
+                </ButtonContainer>
+            </div>
+        )
+    }
+
+    // Withdraw Component
+    function Withdraw() {
+        if (!selectedPool || !connected) {
+            return <Loader size="md"/>;
+        }
+        return (
+            <div>
+                <ButtonContainer>
+                    <BigNumberInput
+                        decimals={selectedPool.decimals}
+                        onChange={onPoolInputChange}
+                        value={poolInputValue}
+                        renderInput={(props: any) => <TextField label="Amount" {...props} />}
+                    />
+                    <div>&nbsp;&nbsp;&nbsp;</div>
+                    <Button size='md' style={{height: '55px'}} color="secondary" variant="contained"
+                            onClick={() => {setPoolInputValue(poolBalance)}} disabled={isWithdrawMaxDisabled()}>
+                        Max
+                    </Button>
+                </ButtonContainer>
+                <ButtonContainer>
+                    <Button size="lg" color="secondary" variant="contained" onClick={withdraw}
+                            disabled={isWithdrawDisabled()}>
+                        Withdraw
+                    </Button>
+                </ButtonContainer>
+            </div>
+        )
+    }
+
+    // Claim Profit Component
+    function ClaimProfit() {
+        if (!selectedPool || !connected) {
+            return <Loader size="md"/>;
+        }
+        return (
+            <div>
+                <TopSmallMargin>
+                    <ButtonContainer>
+                            <Button size="lg" color="primary" variant="contained" onClick={getReward} disabled={isGetRewardDisabled()}>
+                                Claim All Profit
+                            </Button>
+                    </ButtonContainer>
+                </TopSmallMargin>
+            </div>
+        )
+    }
+
+    // Transaction
+    function Transaction() {
+        if (transactionType === 'Deposit'){
+            return <Deposit />
+        } else if (transactionType === 'Withdraw'){
+            return <Withdraw />
+        // when transactionType ==='Claim Profit'
+        } else {
+            return <ClaimProfit />
+        }
+    }
+
     if (!selectedPool || !connected) {
         return <Loader size="md"/>;
     }
@@ -434,13 +459,6 @@ export const PoolComponent: React.FC = () => {
     return (
         <div>
             <Title size="xs"> Pool Balance </Title>
-            <div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            </div>
             <BottomSmallMargin>
                 <SelectContainer>
                     <Select items={poolList || []} activeItemId={selectedPool.id} onItemClick={onSelectPool}/>
@@ -450,13 +468,13 @@ export const PoolComponent: React.FC = () => {
             <BottomLargeMargin>
                 <Info>
                     <div>
-                        <Text size="lg"> {selectedPool.tokenLabel} available to deposit </Text>
-                        <Text size="lg"> {bNumberToHumanFormat(tokenBalance)}</Text>
+                        <Text size="lg"> Available to Deposit </Text>
+                        <Text size="lg"> {bNumberToHumanFormat(tokenBalance)} {selectedPool.tokenLabel} </Text>
                     </div>
                     <Divider/>
                     <div>
-                        <Text size="lg"> {selectedPool.tokenLabel} already deposited </Text>
-                        <Text size="lg"> {bNumberToHumanFormat(poolBalance)}</Text>
+                        <Text size="lg"> Already Deposited </Text>
+                        <Text size="lg"> {bNumberToHumanFormat(poolBalance)} {selectedPool.tokenLabel}</Text>
                     </div>
                     <Divider/>
                     <div>
@@ -473,58 +491,37 @@ export const PoolComponent: React.FC = () => {
                 </Info>
             </BottomLargeMargin>
 
+
             <Title size="xs">
-                Withdraw or Deposit
+                <TransactionTypeContainer>
+                    <TransactionTypeButton className={transactionType==='Deposit' ? 'selected' : ''} onClick={()=>setTransactionType("Deposit")}>
+                    Deposit &nbsp;&nbsp;
+                    </TransactionTypeButton>
+                <div style={{color: 'lightgray'}}> | </div>
+                    <TransactionTypeButton className={transactionType==='Withdraw' ? 'selected' : ''} onClick={()=>setTransactionType("Withdraw")}>
+                        &nbsp;&nbsp; Withdraw &nbsp;&nbsp;
+                    </TransactionTypeButton>
+                <div style={{color: 'lightgray'}}> | </div>
+                    <TransactionTypeButton className={transactionType==='ClaimProfit' ? 'selected' : ''} onClick={()=>setTransactionType("Claim Profit")}>
+                        &nbsp;&nbsp; Claim Profit
+                    </TransactionTypeButton>
                 <div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 </div>
+                </TransactionTypeContainer>
             </Title>
+
 
             <BottomLargeMargin>
                 {!isPoolApproved ?
-                    <ButtonContainer>
-                        <Button size="lg" color="primary" variant="contained" onClick={poolApprove}> Approve PancakeBunny <br/>
-                            to transact your {selectedPool.tokenLabel} </Button>
-                    </ButtonContainer>
+                    <TopSmallMargin>
+                        <ButtonContainer>
+                            <Button size="lg" color="primary" variant="contained" onClick={poolApprove}> Approve PancakeBunny <br/>
+                                to transact your {selectedPool.tokenLabel} </Button>
+                        </ButtonContainer>
+                    </TopSmallMargin>
                     :
-                    <div>
-                        <BigNumberInput
-                            decimals={selectedPool.decimals}
-                            onChange={onPoolInputChange}
-                            value={poolInputValue}
-                            renderInput={(props: any) => <TextField label="Amount" {...props} />}
-                        />
-
-                        <ButtonContainer>
-                            <Button size="lg" color="secondary" variant="contained" onClick={withdraw} disabled={isWithdrawDisabled()}>
-                                Withdraw
-                            </Button>
-                            <div>&nbsp;&nbsp;&nbsp;</div>
-                            <Button size="lg" color="primary" variant="contained" onClick={deposit} disabled={isDepositDisabled()}>
-                                Deposit
-                            </Button>
-                        </ButtonContainer>
-
-                        <ButtonContainer>
-                            <Button size="lg" color="secondary" variant="contained" onClick={withdrawAll} disabled={isWithdrawAllDisabled()}>
-                                Withdraw All
-                            </Button>
-                            <div>&nbsp;&nbsp;&nbsp;</div>
-                            <Button size="lg" color="primary" variant="contained" onClick={depositAll} disabled={isDepositAllDisabled()}>
-                                Deposit All
-                            </Button>
-                        </ButtonContainer>
-
-                        <ButtonContainer>
-                            <Button size="lg" color="primary" variant="contained" onClick={getReward} disabled={isGetRewardDisabled()}>
-                                Claim All Profit
-                            </Button>
-                        </ButtonContainer>
-                    </div>
+                    <Transaction />
                 }
             </BottomLargeMargin>
         </div>

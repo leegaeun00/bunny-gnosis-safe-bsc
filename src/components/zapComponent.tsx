@@ -11,7 +11,7 @@ import {BnbAbi} from "../abis/BnbAbi";
 import {WbnbAbi} from "../abis/WbnbAbi";
 import {BunnyAbi as tokenAbi} from "../abis/BunnyAbi";
 import {ZapBscAbi as zapAbi} from "../abis/ZapBscAbi";
-import {BottomSmallMargin, BottomLargeMargin, ButtonContainer, Info, SelectContainer} from "./styleComponents";
+import {BottomSmallMargin, BottomLargeMargin, TopSmallMargin, ButtonContainer, Info, SelectContainer} from "./styleComponents";
 
 export const ZapComponent: React.FC = () => {
 
@@ -149,12 +149,6 @@ export const ZapComponent: React.FC = () => {
             } else {
                 isTokenApproved=false
             }
-            // if (localStorage.getItem(selectedFromToken.id+"ApprovedBefore")===null){
-            //     isTokenApproved=false
-            // }
-            // if (localStorage.getItem(selectedFromToken.id+"ApprovedBefore")==='true'){
-            //     isTokenApproved=true
-            // }
 
             setFromTokenBalance(fromTokenBalance);
             setIsTokenApproved(isTokenApproved);
@@ -195,8 +189,6 @@ export const ZapComponent: React.FC = () => {
 
         appsSdk.txs.send({txs, params});
 
-        // let approvedKey = selectedFromToken.id + "ApprovedBefore";
-        // localStorage.setItem(approvedKey, 'true');
     }
 
     //zap
@@ -348,7 +340,7 @@ export const ZapComponent: React.FC = () => {
 
     };
 
-    const isZapAllDisabled = () => {
+    const isZapMaxDisabled = () => {
         if (!!tokenInputError || !isTokenApproved || !selectedFromToken || !selectedToToken) {
             return true;
         }
@@ -426,32 +418,38 @@ export const ZapComponent: React.FC = () => {
             <BottomSmallMargin>
                 <Info>
                     <div>
-                        <Text size="lg"> {selectedFromToken.label} available to Zap </Text>
-                        <Text size="lg"> {bNumberToHumanFormat(fromTokenBalance)}</Text>
+                        <Text size="lg"> Available to Zap </Text>
+                        <Text size="lg"> {bNumberToHumanFormat(fromTokenBalance)} {selectedFromToken.label} </Text>
                     </div>
                 </Info>
             </BottomSmallMargin>
 
 
             {!isTokenApproved ?
-                <ButtonContainer>
-                    <Button size="lg" color="primary" variant="contained" onClick={tokenApprove}> Approve PancakeBunny <br/> to Zap your &nbsp;{selectedFromToken.label} </Button>
-                </ButtonContainer>
+                <TopSmallMargin>
+                    <ButtonContainer>
+                        <Button size="lg" color="primary" variant="contained" onClick={tokenApprove}> Approve PancakeBunny <br/> to Zap your &nbsp;{selectedFromToken.label} </Button>
+                    </ButtonContainer>
+                </TopSmallMargin>
                 :
                 <div>
-                    <BigNumberInput
-                        decimals={selectedFromToken.decimals}
-                        onChange={onTokenInputChange}
-                        value={tokenInputValue}
-                        renderInput={(props: any) => <TextField label="Amount" {...props} />}
-                    />
-
                     <ButtonContainer>
-                        <Button size="lg" color="primary" variant="contained" onClick={zap} disabled={isZapDisabled()}>
-                            Zap
+                        <BigNumberInput
+                            decimals={selectedFromToken.decimals}
+                            onChange={onTokenInputChange}
+                            value={tokenInputValue}
+                            renderInput={(props: any) => <TextField label="Amount" {...props} />}
+                        />
+                        <div>&nbsp;&nbsp;&nbsp;</div>
+                        <Button size='md' style={{height: '55px'}} color="primary" variant="contained"
+                                onClick={() => {setTokenInputValue(fromTokenBalance)}} disabled={isZapMaxDisabled()}>
+                            Max
                         </Button>
-                        <Button size="lg" color="primary" variant="contained" onClick={zapAll} disabled={isZapAllDisabled()}>
-                            Zap All
+                    </ButtonContainer>
+                    <ButtonContainer>
+                        <Button size="lg" color="primary" variant="contained" onClick={zap}
+                                disabled={isZapDisabled()}>
+                            Zap
                         </Button>
                     </ButtonContainer>
                 </div>

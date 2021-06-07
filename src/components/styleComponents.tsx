@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
 
 export const SelectContainer = styled.div`
   display: flex;
@@ -32,6 +31,13 @@ export const ButtonContainer = styled.div`
   margin-bottom: 15px;
 `;
 
+export const TransactionTypeContainer = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 15px;
+  margin-bottom: 15px;
+`;
+
 export const BottomLargeMargin = styled.div`
   margin-bottom: 60px;
 `;
@@ -40,18 +46,30 @@ export const BottomSmallMargin = styled.div`
   margin-bottom: 25px;
 `;
 
+export const TopSmallMargin = styled.div`
+  margin-top: 30px;
+`;
+
+export const TransactionTypeButton = styled.div`
+  background: none!important;
+  border: none;
+  padding: 0!important;
+  font-family: 'Averta';
+  color: 'black';
+  text-decoration: none;
+  cursor: pointer;
+  &:hover {
+    color: #008C73;
+  }
+  &.selected{
+    color: #008C73;
+  }
+`;
+
 const Card = styled.div`
   display: flex;
   justify-content: left;
   padding: 24px;
-`;
-
-export const StyledLink = styled(Link)`
-    text-decoration: none;
-
-    &:focus, &:hover, &:visited, &:link, &:active {
-        text-decoration: none;
-    }
 `;
 
 export const WidgetWrapper: React.FC = ({ children }) => (

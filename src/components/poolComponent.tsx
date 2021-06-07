@@ -151,17 +151,22 @@ export const PoolComponent: React.FC = () => {
                 interestEarn = ["0", "0"];
             }
 
-            // get allowance (only in console)
-            let allowance = await tokenInstance.methods.allowance(safeInfo.safeAddress,selectedPool.poolAddr).call()
+            // get allowance
+            let tokenAllowance = await tokenInstance.methods.allowance(safeInfo.safeAddress,selectedPool.poolAddr).call()
 
             // get isPoolApproved
             let isPoolApproved;
-            if (localStorage.getItem(selectedPool.id+"ApprovedBefore")===null){
-                isPoolApproved=false
+            if (tokenAllowance > 0){
+                isPoolApproved = true
+            } else {
+                isPoolApproved = false
             }
-            if (localStorage.getItem(selectedPool.id+"ApprovedBefore")==='true'){
-                isPoolApproved=true
-            }
+            // if (localStorage.getItem(selectedPool.id+"ApprovedBefore")===null){
+            //     isPoolApproved=false
+            // }
+            // if (localStorage.getItem(selectedPool.id+"ApprovedBefore")==='true'){
+            //     isPoolApproved=true
+            // }
 
             setTokenBalance(tokenBalance);
             setPoolBalance(poolBalance);
@@ -204,8 +209,8 @@ export const PoolComponent: React.FC = () => {
 
         appsSdk.txs.send({txs, params});
 
-        let approvedKey = selectedPool.id + "ApprovedBefore";
-        localStorage.setItem(approvedKey, 'true');
+        // let approvedKey = selectedPool.id + "ApprovedBefore";
+        // localStorage.setItem(approvedKey, 'true');
     }
 
     // deposit in pool

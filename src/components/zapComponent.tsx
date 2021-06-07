@@ -140,13 +140,21 @@ export const ZapComponent: React.FC = () => {
                 fromTokenBalance = await fromTokenInstance.methods.balanceOf(safeInfo.safeAddress).call();
             }
 
+            let zapAddr = '0xdC2bBB0D33E0e7Dea9F5b98F46EDBaC823586a0C'
+            let fromTokenAllowance = await fromTokenInstance.methods.allowance(safeInfo.safeAddress,zapAddr).call();
+
             let isTokenApproved;
-            if (localStorage.getItem(selectedFromToken.id+"ApprovedBefore")===null){
+            if (fromTokenAllowance >0){
+                isTokenApproved=true
+            } else {
                 isTokenApproved=false
             }
-            if (localStorage.getItem(selectedFromToken.id+"ApprovedBefore")==='true'){
-                isTokenApproved=true
-            }
+            // if (localStorage.getItem(selectedFromToken.id+"ApprovedBefore")===null){
+            //     isTokenApproved=false
+            // }
+            // if (localStorage.getItem(selectedFromToken.id+"ApprovedBefore")==='true'){
+            //     isTokenApproved=true
+            // }
 
             setFromTokenBalance(fromTokenBalance);
             setIsTokenApproved(isTokenApproved);
@@ -187,8 +195,8 @@ export const ZapComponent: React.FC = () => {
 
         appsSdk.txs.send({txs, params});
 
-        let approvedKey = selectedFromToken.id + "ApprovedBefore";
-        localStorage.setItem(approvedKey, 'true');
+        // let approvedKey = selectedFromToken.id + "ApprovedBefore";
+        // localStorage.setItem(approvedKey, 'true');
     }
 
     //zap

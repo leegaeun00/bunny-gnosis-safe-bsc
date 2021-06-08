@@ -1,24 +1,28 @@
-import React from 'react';
-import { BrowserRouter as Router, Switch, Route, Link, useHistory } from 'react-router-dom';
+import React, {useState} from 'react';
+import { BrowserRouter as Router, Switch, Route, useHistory } from 'react-router-dom';
 import { Button } from '@gnosis.pm/safe-react-components';
 
 import { ZapComponent } from './components/zapComponent';
 import { PoolComponent } from './components/poolComponent';
-import { WidgetWrapper, ButtonContainer, BottomLargeMargin } from './components/styleComponents';
+import { WidgetWrapper, ButtonContainer, BottomLargeMargin, PoolPageButton, ZapPageButton } from './components/styleComponents';
 
 
 const App: React.FC = () => {
+
+    const [page, setPage] = useState<string>('pool');
+
     function PoolButton() {
         const history = useHistory();
 
         function handleClick() {
             history.push('/');
+            setPage('pool');
         }
 
         return (
-        <Button size="md" color="primary" variant="bordered" onClick={handleClick}>
+        <PoolPageButton className={page==='pool' ? 'selected' : ''} size="md" color="primary" variant="outlined" onClick={handleClick}>
             Pool
-        </Button>)
+        </PoolPageButton>)
     }
 
     function ZapButton() {
@@ -26,12 +30,13 @@ const App: React.FC = () => {
 
         function handleClick() {
             history.push('/zap');
+            setPage('zap');
         }
 
         return (
-        <Button size="md" color="secondary" variant="bordered" onClick={handleClick}>
+        <ZapPageButton className={page==='zap' ? 'selected' : ''} size="md" color="secondary" variant="outlined" onClick={handleClick}>
             Zap
-        </Button>)
+        </ZapPageButton>)
     }
 
   return (

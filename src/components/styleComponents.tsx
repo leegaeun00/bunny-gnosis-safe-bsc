@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Button } from '@gnosis.pm/safe-react-components';
 
 export const SelectContainer = styled.div`
   display: flex;
@@ -63,6 +64,34 @@ export const TransactionTypeButton = styled.div`
   }
   &.selected{
     color: #008C73;
+  }
+`;
+
+export const PoolPageButton = styled(Button)`
+  color: #005646 !important;
+  &.selected{
+    color: white !important;
+    background: #005646;
+    border: #005646;
+    &:hover {
+    color: white !important;
+    background: #005646;
+    border: #005646;
+  }
+  }
+`;
+
+export const ZapPageButton = styled(Button)`
+  &:hover {
+     color: black !important;
+  }
+  &.selected{
+    color: white !important;
+    background: black;
+    &:hover {
+    color: white !important;
+    background: black;
+  }
   }
 `;
 
